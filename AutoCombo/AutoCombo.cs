@@ -32,7 +32,8 @@ namespace Autocombo
             Config.AddSubMenu(new Menu("AutoCombo Settings", "AutoCombo"));
             Config.SubMenu("AutoCombo").AddItem(new MenuItem("Killable", "Combo Only Killable?").SetValue(true));
 
-            //Game.PrintChat("<font color='#F7A100'>Auto Combo by XcxooxL Loaded 1.2 .</font>");
+            Game.PrintChat("<font color='#F7A100'>Auto Combo by XcxooxL Loaded 1.0 .</font>");
+            Game.PrintChat("<font color='#F7A100'>Credits to Diabaths and Pingo for helping me test =] </font>");
             string[] champions = { "Ezreal", "Lux", "Ashe", "Draven", "Fizz", "Graves", "Riven", "Sona", "Jinx", "Caitlyn" };
 
             for (int i = 0; i <= 9; i++)
