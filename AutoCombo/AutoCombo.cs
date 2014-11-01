@@ -146,6 +146,7 @@ namespace Autocombo
                         }
                         else
                         {
+
                             foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>())
                             {
                                 //   PredictionOutput allyOutput = Prediction.GetPrediction(enemy, 500, args.SData.LineWidth, args.SData.MissileSpeed);
@@ -156,8 +157,12 @@ namespace Autocombo
                                 Game.PrintChat("Total damage is : " + (Allydamage.CalculatedDamage + Mydamage.CalculatedDamage));
                                 */
 
+
                                 if (Config.Item("Killable").GetValue<bool>())
                                 {
+                                    Allydamage = sender.GetDamageSpell(enemy, args.SData.Name);
+                                    Mydamage = Player.GetDamageSpell(enemy, SpellSlot.R);
+
                                     if ((Allydamage.CalculatedDamage + Mydamage.CalculatedDamage) < enemy.Health && Allydamage.CalculatedDamage > enemy.Health)
                                     {
                                         return;
