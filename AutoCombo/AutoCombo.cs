@@ -34,7 +34,7 @@ namespace Autocombo
 
             Game.PrintChat("<font color='#F7A100'>Auto Combo by XcxooxL Loaded 1.0 .</font>");
             Game.PrintChat("<font color='#F7A100'>Credits to Diabaths and Pingo for helping me test =] </font>");
-            string[] champions = { "Ezreal", "Lux", "Ashe", "Draven", "Fizz", "Graves", "Riven", "Sona", "Jinx", "Caitlyn" };
+            string[] champions = { "Ezreal", "Lux", "Ashe", "Draven", "Fizz", "Graves", "Riven", "Sona", "Jinx", "Caitlyn", "Riven" };
 
             for (int i = 0; i <= 9; i++)
             {
@@ -89,6 +89,11 @@ namespace Autocombo
                 R = new Spell(SpellSlot.R, 2000);
                 R.SetTargetted(0.5f, 2000, Player.Position);
             }
+            if (Player.BaseSkinName == "Riven")
+            {
+                R = new Spell(SpellSlot.R, 1100);
+                R.SetSkillshot(0.25f, 125, 2200, false, SkillshotType.SkillshotCone);
+            }
 
         }
         static Vector2 V2E(Vector3 from, Vector3 direction, float distance)
@@ -110,7 +115,7 @@ namespace Autocombo
                     {
                        
                         var spellData = SpellDatabase.GetByName(args.SData.Name);
-
+                            
                         if (spellData.ChampionName == "Caitlyn")
                         {
                             var diab = (Obj_AI_Base)args.Target;
@@ -127,7 +132,7 @@ namespace Autocombo
                             }
                             Game.PrintChat("Spell Detected: " + args.SData.Name + " By: " + sender.BaseSkinName +
                                            " Ally Casted it On : " + diab.BaseSkinName); //Checks..
-                            if (diab.Distance(Player.Position) < 20000 && diab.Distance(Player.Position) <= R.Range)
+                            if (diab.Distance(Player.Position) < 3200 && diab.Distance(Player.Position) <= R.Range)
                             {
                                 if (R.IsSkillshot)
                                 {
@@ -163,9 +168,12 @@ namespace Autocombo
                                     {
                                         Game.PrintChat("SkillShot Detected: " + args.SData.Name + " By: " + sender.BaseSkinName +
                                                        " Ally Casted it right.. On : " + enemy.BaseSkinName); //Checks..
-                                        if (enemy.Distance(Player.Position) < 2000 && enemy.Distance(Player.Position) <= R.Range)
+                                        if (enemy.Distance(Player.Position) < 3200 && enemy.Distance(Player.Position) <= R.Range)
                                         {
-
+                                            if (Player.BaseSkinName == "Riven")
+                                            {
+                                                R.Cast(false);
+                                            }
                                             if (!R.IsSkillshot) // Casting for targetable spells
                                             {
                                                 R.CastOnUnit(enemy, true);
