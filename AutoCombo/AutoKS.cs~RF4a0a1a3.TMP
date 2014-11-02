@@ -56,9 +56,7 @@ namespace Autocombo
                 }
                 else
                 {
-                    SpellDataInst Qdata = Player.Spellbook.GetSpell(SpellSlot.Q);
-                    _Q = new Spell(SpellSlot.Q, Qdata.SData.CastRange[0]);
-                    _Q.SetTargetted(0.25f, Qdata.SData.MissileSpeed);
+                    _Q.SetTargetted(dataQ.Delay / 1000f, dataQ.MissileSpeed);
                 }
             }
 
@@ -72,27 +70,22 @@ namespace Autocombo
                 }
                 else
                 {
-                    SpellDataInst Wdata = Player.Spellbook.GetSpell(SpellSlot.W);
-                    _W = new Spell(SpellSlot.W, Wdata.SData.CastRange[0]);
-                    _W.SetTargetted(0.25f, Wdata.SData.MissileSpeed);
+                    _W.SetTargetted(dataW.Delay / 1000f, dataW.MissileSpeed);
                 }
 
             }
-            if (dataE != null || !_E.IsSkillshot)
+            if (dataE != null)
             {
                 Config.SubMenu("AutoCombo").AddItem(new MenuItem("SKSE", "Use E?").SetValue(true));
-                
+                _E = new Spell(SpellSlot.E, SpellDatabase.GetByName(se).Range);
 
                 if (_E.IsSkillshot)
                 {
-                    _E = new Spell(SpellSlot.E, SpellDatabase.GetByName(se).Range);
                     _E.SetSkillshot(dataE.Delay / 1000f, dataE.Radius, dataE.MissileSpeed, true, (SkillshotType)dataE.Type);
                 }
                 else
                 {
-                    SpellDataInst Edata = Player.Spellbook.GetSpell(SpellSlot.E);
-                     _E = new Spell(SpellSlot.E, Edata.SData.CastRange[0]);
-                    _E.SetTargetted(0.25f, Edata.SData.MissileSpeed);
+                    _E.SetTargetted(dataE.Delay / 1000f, dataE.MissileSpeed);
                 }
 
             }
@@ -122,15 +115,9 @@ namespace Autocombo
                                 Allydamage.CalculatedDamage < enemy.Health)
                             {
                                 Game.PrintChat("enemy health: " + enemy.Health + " Total damage : " + (Allydamage.CalculatedDamage + Mydamage.CalculatedDamage) + "health after : " + (enemy.Health - (Allydamage.CalculatedDamage + Mydamage.CalculatedDamage)) + " " + args.SData.Name);
-                                if (_Q.IsSkillshot)
-                                {
-                                    var output = Prediction.GetPrediction(enemy, _Q.Delay, _Q.Width, _Q.Speed);
-                                    _Q.Cast(output.UnitPosition, true); 
-                                }
-                                else
-                                {
-                                    _Q.CastOnUnit(enemy, true);
-                                }
+                                var output = Prediction.GetPrediction(enemy, _Q.Delay, _Q.Width, _Q.Speed);
+                                _Q.Cast(output.UnitPosition, true);
+
                             }
                         }
 
@@ -141,15 +128,8 @@ namespace Autocombo
                             if ((enemy.Distance(Player) <= _W.Range) && (Allydamage.CalculatedDamage + Mydamage.CalculatedDamage) > enemy.Health &&
                                 Allydamage.CalculatedDamage < enemy.Health)
                             {
-                                if (_W.IsSkillshot)
-                                {
-                                    var output = Prediction.GetPrediction(enemy, _W.Delay, _W.Width, _W.Speed);
-                                    _W.Cast(output.UnitPosition, true);
-                                }
-                                else
-                                {
-                                    _W.CastOnUnit(enemy, true);
-                                }
+                                var output = Prediction.GetPrediction(enemy, _W.Delay, _W.Width, _W.Speed);
+                                _W.Cast(output.UnitPosition, true);
                             }
 
                         }
@@ -161,16 +141,8 @@ namespace Autocombo
                             if ((enemy.Distance(Player) <= _E.Range) && (Allydamage.CalculatedDamage + Mydamage.CalculatedDamage) > enemy.Health &&
                                 Allydamage.CalculatedDamage < enemy.Health)
                             {
-                                if (_E.IsSkillshot)
-                                {
-                                    var output = Prediction.GetPrediction(enemy, _E.Delay, _E.Width, _E.Speed);
-                                    _E.Cast(output.UnitPosition, true);
-                                }
-                                else
-                                {
-                                    _E.CastOnUnit(enemy, true);
-                                }
-
+                                var output = Prediction.GetPrediction(enemy, _E.Delay, _E.Width, _E.Speed);
+                                _E.Cast(output.UnitPosition, true);
                             }
 
                         }
