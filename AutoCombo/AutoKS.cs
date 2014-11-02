@@ -50,7 +50,7 @@ namespace Autocombo
                 _Q = new Spell(SpellSlot.Q, dataQ.Range);
                 if (_Q.IsSkillshot)
                 {
-                    _Q.SetSkillshot(dataQ.Delay / 1000f, dataQ.Radius, dataQ.MissileSpeed, true, (SkillshotType)dataQ.Type);
+                    _Q.SetSkillshot(dataQ.Delay / 1000f, dataQ.Radius, dataQ.MissileSpeed, true, SkillshotType.SkillshotLine);
                 }
                 else
                 {
@@ -104,7 +104,7 @@ namespace Autocombo
                         (args.SData.LineWidth))
                     {
                         Allydamage = sender.GetDamageSpell(enemy, args.SData.Name);
-                        Game.PrintChat("WillHit : " + "Spell Name : " + args.SData.Name + " Damage : " + Allydamage.CalculatedDamage + "Target Name : " + args.Target.Name);
+                        //Game.PrintChat("WillHit : " + "Spell Name : " + args.SData.Name + " Damage : " + Allydamage.CalculatedDamage + "Target Name : " + args.Target.Name);
 
                         if ((Config.Item("SKSQ").GetValue<bool>()))
                         {
@@ -112,7 +112,7 @@ namespace Autocombo
                             if ((Allydamage.CalculatedDamage + Mydamage.CalculatedDamage) > enemy.Health &&
                                 Allydamage.CalculatedDamage < enemy.Health)
                             {
-                                Game.PrintChat("YEAAAAAAAAAAAAAAAAAA");
+                                Game.PrintChat("enemy health: " + enemy.Health + " Total damage : " + (Allydamage.CalculatedDamage + Mydamage.CalculatedDamage) + "health after : " + (enemy.Health - (Allydamage.CalculatedDamage + Mydamage.CalculatedDamage)));
                                 _Q.Cast(enemy, true);
                             }
                         }
