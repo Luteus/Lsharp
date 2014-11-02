@@ -106,15 +106,10 @@ namespace Autocombo
                         (200) || args.SData.Name.ToLower().Contains("attack") && args.Target == enemy)
                     {
                         Game.PrintChat("works");
-                        Game.PrintChat("enemy health: " + enemy.Health + " Total damage : " + Allydamage.CalculatedDamage + Mydamage.CalculatedDamage + "health after : " + (enemy.Health - (Allydamage.CalculatedDamage + Mydamage.CalculatedDamage)) + " " + args.SData.Name);
                         Allydamage = sender.GetDamageSpell(enemy, args.SData.Name);
-                        //Game.PrintChat(args.Target.Name + " " + sender.Name + " " + args.SData.Name + " " + Allydamage.CalculatedDamage);
-                        
-                        //Game.PrintChat("WillHit : " + "Spell Name : " + args.SData.Name + " Damage : " + Allydamage.CalculatedDamage + "Target Name : " + args.Target.Name);
 
                         if ((Config.Item("SKSQ").GetValue<bool>()))
                         {
-                            Game.PrintChat("enemy health: " + enemy.Health + " Total damage : " + (Allydamage.CalculatedDamage + Mydamage.CalculatedDamage) + "health after : " + (enemy.Health - (Allydamage.CalculatedDamage + Mydamage.CalculatedDamage)) + " " + args.SData.Name);
                             Mydamage = Player.GetDamageSpell(enemy, SpellSlot.Q);
                             if ((enemy.Distance(Player) <= _Q.Range) && (Allydamage.CalculatedDamage + Mydamage.CalculatedDamage) > enemy.Health &&
                                 Allydamage.CalculatedDamage < enemy.Health)
