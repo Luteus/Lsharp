@@ -56,7 +56,7 @@ namespace Autocombo
                 _Q = new Spell(SpellSlot.Q, dataQ.Range);
                 if (_Q.IsSkillshot)
                 {
-                    _Q.SetSkillshot(dataQ.Delay, dataQ.Radius, dataQ.MissileSpeed, true, SkillshotType.SkillshotLine);
+                    _Q.SetSkillshot(dataQ.Delay, dataQ.Radius, dataQ.MissileSpeed, true, (SkillshotType)dataQ.Type);
                 }
                 else
                 {
@@ -70,7 +70,7 @@ namespace Autocombo
                 _W = new Spell(SpellSlot.W, dataW.Range);
                 if (_W.IsSkillshot)
                 {
-                    _W.SetSkillshot(dataW.Delay, dataW.Radius, dataW.MissileSpeed, true, SkillshotType.SkillshotLine);
+                    _W.SetSkillshot(dataW.Delay, dataW.Radius, dataW.MissileSpeed, true, (SkillshotType)dataW.Type);
                 }
                 else
                 {
@@ -85,7 +85,7 @@ namespace Autocombo
 
                 if (_E.IsSkillshot)
                 {
-                    _E.SetSkillshot(dataE.Delay, dataE.Radius, dataE.MissileSpeed, true, SkillshotType.SkillshotLine);
+                    _E.SetSkillshot(dataE.Delay, dataE.Radius, dataE.MissileSpeed, true, (SkillshotType)dataE.Type);
                 }
                 else
                 {
