@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Drawing.Printing;
-using System.Linq;
+using System.Runtime.InteropServices;
 using Evade;
 using LeagueSharp;
 using LeagueSharp.Common;
@@ -13,15 +12,21 @@ namespace Autocombo
         public static Obj_AI_Hero Player;
         public Menu Config;
         public static Spell R;
+        public static Spell _Q;
+        public static Spell _W;
+        public static Spell _E;
         public DamageSpell Allydamage;
         public DamageSpell Mydamage;
+        public string sq;
+        public string sw;
+        public string se;
+
 
 
         public Autocombo()
-        {    
-            CustomEvents.Game.OnGameLoad += OnGameLoad; 
+        {
+            CustomEvents.Game.OnGameLoad += OnGameLoad;
         }
-
 
         private void OnGameLoad(EventArgs args)
         {
@@ -32,8 +37,62 @@ namespace Autocombo
             Config.AddSubMenu(new Menu("AutoCombo Settings", "AutoCombo"));
             Config.SubMenu("AutoCombo").AddItem(new MenuItem("Killable", "Combo Only Killable?").SetValue(true));
 
+           
+            
+            
             Game.PrintChat("<font color='#F7A100'>Auto Combo by XcxooxL Loaded 1.0 .</font>");
             Game.PrintChat("<font color='#F7A100'>Credits to Diabaths and Pingo for helping me test =] </font>");
+            
+            sq = ObjectManager.Player.Spellbook.GetSpell(SpellSlot.Q).SData.Name;
+            sw = ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).SData.Name;
+            se = ObjectManager.Player.Spellbook.GetSpell(SpellSlot.E).SData.Name;
+            var dataQ = SpellDatabase.GetByName(sq);
+            var dataW = SpellDatabase.GetByName(sw);
+            var dataE = SpellDatabase.GetByName(se);
+
+            if (dataQ != null)
+            {
+                Config.SubMenu("AutoCombo").AddItem(new MenuItem("SKSQ", "Use Q?").SetValue(true));
+                _Q = new Spell(SpellSlot.Q, dataQ.Range);
+                if (_Q.IsSkillshot)
+                {
+                    _Q.SetSkillshot(dataQ.Delay, dataQ.Radius, dataQ.MissileSpeed, true, SkillshotType.SkillshotLine);
+                }
+                else
+                {
+                    _Q.SetTargetted(dataQ.Delay, dataQ.MissileSpeed);
+                }
+            }
+
+            if (dataW != null)
+            {
+                Config.SubMenu("AutoCombo").AddItem(new MenuItem("SKSW", "Use W?").SetValue(true));
+                _W = new Spell(SpellSlot.W, dataW.Range);
+                if (_W.IsSkillshot)
+                {
+                    _W.SetSkillshot(dataW.Delay, dataW.Radius, dataW.MissileSpeed, true, SkillshotType.SkillshotLine);
+                }
+                else
+                {
+                    _W.SetTargetted(dataW.Delay, dataW.MissileSpeed);
+                }
+
+            }
+            if (dataE != null)
+            {
+                Config.SubMenu("AutoCombo").AddItem(new MenuItem("SKSE", "Use E?").SetValue(true));
+                _E = new Spell(SpellSlot.E, SpellDatabase.GetByName(se).Range);
+
+                if (_E.IsSkillshot)
+                {
+                    _E.SetSkillshot(dataE.Delay, dataE.Radius, dataE.MissileSpeed, true, SkillshotType.SkillshotLine);
+                }
+                else
+                {
+                    _E.SetTargetted(dataE.Delay, dataE.MissileSpeed);
+                }
+                
+            }
             string[] champions = { "Ezreal", "Lux", "Ashe", "Draven", "Fizz", "Graves", "Riven", "Sona", "Jinx", "Caitlyn", "Riven" };
 
             for (int i = 0; i <= 9; i++)
@@ -94,16 +153,17 @@ namespace Autocombo
                 R = new Spell(SpellSlot.R, 1100);
                 R.SetSkillshot(0.25f, 125, 2200, false, SkillshotType.SkillshotCone);
             }
-
         }
+
         static Vector2 V2E(Vector3 from, Vector3 direction, float distance)
         {
             return from.To2D() + distance * Vector3.Normalize(direction - from).To2D();
         }
 
         public void ObjAiBaseOnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
-        {       
-            if (sender.IsAlly && !sender.IsMinion && !sender.IsMe)
+        {
+            var spellData = SpellDatabase.GetByName(args.SData.Name);
+            if (sender.IsAlly && !sender.IsMinion && !sender.IsMe && !sender.IsAutoAttacking)
             {
                 string[] spelllist = {"EzrealTrueshotBarrage", "LuxMaliceCannon", "UFSlash", "InfernalGuardian", "EnchantedCrystalArrow", "DravenRCast", "FizzMarinerDoom", "GravesChargeShot",
  "LeonaSolarFlare", "RivenFengShuiEngine", "SejuaniGlacialPrisonStart", "shyvanatransformcast", "SonaCrescendo", "XerathArcaneBarrageWrapper", "ZiggsR",
@@ -113,15 +173,13 @@ namespace Autocombo
                 {
                     if (args.SData.Name == spelllist[i])
                     {
-                       
-                        var spellData = SpellDatabase.GetByName(args.SData.Name);
-                            
+                        //var spellData = SpellDatabase.GetByName(args.SData.Name);
+
                         if (spellData.ChampionName == "Caitlyn")
                         {
                             var diab = (Obj_AI_Base)args.Target;
-
-                                Allydamage = sender.GetDamageSpell(diab, args.SData.Name);
-                                Mydamage = Player.GetDamageSpell(diab, SpellSlot.R);
+                            Allydamage = sender.GetDamageSpell(diab, args.SData.Name);
+                            Mydamage = Player.GetDamageSpell(diab, SpellSlot.R);
 
                             if (Config.Item("Killable").GetValue<bool>())
                             {
@@ -146,7 +204,6 @@ namespace Autocombo
                         }
                         else
                         {
-
                             foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>())
                             {
                                 //   PredictionOutput allyOutput = Prediction.GetPrediction(enemy, 500, args.SData.LineWidth, args.SData.MissileSpeed);
@@ -169,27 +226,76 @@ namespace Autocombo
                                     }
                                 }
 
-                                    if (enemy.IsEnemy && enemy.Distance(V2E(args.Start, args.End, enemy.Distance(sender.Position))) <= (spellData.Radius - 50))
-                                    {
-                                        Game.PrintChat("SkillShot Detected: " + args.SData.Name + " By: " + sender.BaseSkinName +
+                                if (enemy.IsEnemy && enemy.Distance(V2E(args.Start, args.End, enemy.Distance(sender.Position))) <= (spellData.Radius - 50))
+                                {
+                            //better? yes, more readable not? yea :D
+                                    Game.PrintChat("SkillShot Detected: " + args.SData.Name + " By: " + sender.BaseSkinName +
                                                        " Ally Casted it right.. On : " + enemy.BaseSkinName); //Checks..
-                                        if (enemy.Distance(Player.Position) < 3200 && enemy.Distance(Player.Position) <= R.Range)
+                                    if (enemy.Distance(Player.Position) < 3200 && enemy.Distance(Player.Position) <= R.Range)
+                                    {
+                                        if (Player.BaseSkinName == "Riven")
                                         {
-                                            if (Player.BaseSkinName == "Riven")
-                                            {
-                                                R.Cast(false);
-                                            }
-                                            if (!R.IsSkillshot) // Casting for targetable spells
-                                            {
-                                                R.CastOnUnit(enemy, true);
-                                            }
-                                            else
-                                            {
-                                                R.Cast(enemy, true);
-                                            }
+                                            R.Cast(false);
+                                        }
+                                        if (!R.IsSkillshot) // Casting for targetable spells
+                                        {
+                                            R.CastOnUnit(enemy, true);
+                                        }
+                                        else
+                                        {
+                                            R.Cast(enemy, true);
                                         }
                                     }
+                                }
                             }
+                        }
+                    }
+                }
+                Game.PrintChat("YEA");
+                // this part is new.. anyway you should well indent the code ^^ indent? like Organize? yes :) is there any software for that? lol not at all
+                foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>())
+                {
+                    
+                    Allydamage = sender.GetDamageSpell(enemy, args.SData.Name);
+                    if (enemy.IsEnemy &&
+                        enemy.Distance(V2E(args.Start, args.End, enemy.Distance(sender.Position))) <=
+                        (spellData.Radius - 50))
+                    {
+                        
+                        if ((Config.Item("SKSQ").GetValue<bool>()))
+                        {
+                            Mydamage = Player.GetDamageSpell(enemy, SpellSlot.Q);
+
+                            if ((Allydamage.CalculatedDamage + Mydamage.CalculatedDamage) < enemy.Health &&
+                                Allydamage.CalculatedDamage > enemy.Health)
+                            {
+                                return;
+                            }
+                            _Q.Cast(enemy, true);
+                        }
+
+                        if ((Config.Item("SKSW").GetValue<bool>()))
+                        {
+                            Mydamage = Player.GetDamageSpell(enemy, SpellSlot.W);
+
+                            if ((Allydamage.CalculatedDamage + Mydamage.CalculatedDamage) < enemy.Health &&
+                                Allydamage.CalculatedDamage > enemy.Health)
+                            {
+                                return;
+                            }
+                            _W.Cast(enemy, true);
+                        }
+
+                        if ((Config.Item("SKSE").GetValue<bool>()))
+                        {
+                            Mydamage = Player.GetDamageSpell(enemy, SpellSlot.E);
+
+                            if ((Allydamage.CalculatedDamage + Mydamage.CalculatedDamage) < enemy.Health &&
+                                Allydamage.CalculatedDamage > enemy.Health)
+                            {
+                                return;
+                            }
+                            _E.Cast(enemy, true);
                         }
                     }
                 }
