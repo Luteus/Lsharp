@@ -40,6 +40,7 @@ namespace Autocombo
             var dataQ = SpellDatabase.GetByName(sq);
             var dataW = SpellDatabase.GetByName(sw);
             var dataE = SpellDatabase.GetByName(se);
+
             Config = new Menu("Auto KillSecure", "AutoCombo", true);
             Config.AddToMainMenu();
             Config.AddSubMenu(new Menu("AutoKillSteal Settings", "AutoCombo"));
@@ -95,25 +96,28 @@ namespace Autocombo
 
         private void ObjAiBaseOnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            if (sender.IsAlly && !sender.IsMinion)
+            if (sender.IsAlly && !sender.IsMinion && !args.Target.Name.ToLower().Contains("minion"))
             {
-                foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>())
+                foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero != null && hero.IsValid && hero.IsVisible && !hero.IsDead && hero.IsEnemy))
                 {
-                    if (args.SData.Name.ToLower().Contains("attack") && !args.Target.Name.ToLower().Contains("minion") && !args.Target.Name.ToLower().Contains("light") || enemy.IsEnemy &&
-                        enemy.Distance(V2E(args.Start, args.End, enemy.Distance(sender.Position))) <=
-                        (args.SData.LineWidth))
+                    if (enemy.Distance(V2E(args.Start, args.End, enemy.Distance(sender.Position))) <=
+                        (200) || args.SData.Name.ToLower().Contains("attack"))
                     {
                         Allydamage = sender.GetDamageSpell(enemy, args.SData.Name);
+                        //Game.PrintChat(args.Target.Name + " " + sender.Name + " " + args.SData.Name + " " + Allydamage.CalculatedDamage);
+                        
                         //Game.PrintChat("WillHit : " + "Spell Name : " + args.SData.Name + " Damage : " + Allydamage.CalculatedDamage + "Target Name : " + args.Target.Name);
 
                         if ((Config.Item("SKSQ").GetValue<bool>()))
                         {
+                            Game.PrintChat("enemy health: " + enemy.Health + " Total damage : " + (Allydamage.CalculatedDamage + Mydamage.CalculatedDamage) + "health after : " + (enemy.Health - (Allydamage.CalculatedDamage + Mydamage.CalculatedDamage)) + " " + args.SData.Name);
                             Mydamage = Player.GetDamageSpell(enemy, SpellSlot.Q);
-                            if ((Allydamage.CalculatedDamage + Mydamage.CalculatedDamage) > enemy.Health &&
+                            if ((enemy.Distance(Player) <= _Q.Range) && (Allydamage.CalculatedDamage + Mydamage.CalculatedDamage) > enemy.Health &&
                                 Allydamage.CalculatedDamage < enemy.Health)
                             {
-                                Game.PrintChat("enemy health: " + enemy.Health + " Total damage : " + (Allydamage.CalculatedDamage + Mydamage.CalculatedDamage) + "health after : " + (enemy.Health - (Allydamage.CalculatedDamage + Mydamage.CalculatedDamage)));
-                                _Q.Cast(enemy, true);
+                                Game.PrintChat("enemy health: " + enemy.Health + " Total damage : " + (Allydamage.CalculatedDamage + Mydamage.CalculatedDamage) + "health after : " + (enemy.Health - (Allydamage.CalculatedDamage + Mydamage.CalculatedDamage)) + " " + args.SData.Name);
+                                var output = Prediction.GetPrediction(enemy, _Q.Delay, _Q.Width, _Q.Speed);
+                                _Q.Cast(output.UnitPosition, true);
                             }
                         }
 
@@ -121,10 +125,11 @@ namespace Autocombo
                         {
                             Mydamage = Player.GetDamageSpell(enemy, SpellSlot.W);
 
-                            if ((Allydamage.CalculatedDamage + Mydamage.CalculatedDamage) > enemy.Health &&
+                            if ((enemy.Distance(Player) <= _W.Range) && (Allydamage.CalculatedDamage + Mydamage.CalculatedDamage) > enemy.Health &&
                                 Allydamage.CalculatedDamage < enemy.Health)
                             {
-                                _W.Cast(enemy, true);
+                                var output = Prediction.GetPrediction(enemy, _W.Delay, _W.Width, _W.Speed);
+                                _W.Cast(output.UnitPosition, true);
                             }
 
                         }
@@ -133,10 +138,11 @@ namespace Autocombo
                         {
                             Mydamage = Player.GetDamageSpell(enemy, SpellSlot.E);
 
-                            if ((Allydamage.CalculatedDamage + Mydamage.CalculatedDamage) > enemy.Health &&
+                            if ((enemy.Distance(Player) <= _E.Range) && (Allydamage.CalculatedDamage + Mydamage.CalculatedDamage) > enemy.Health &&
                                 Allydamage.CalculatedDamage < enemy.Health)
                             {
-                                _E.Cast(enemy, true);
+                                var output = Prediction.GetPrediction(enemy, _E.Delay, _E.Width, _E.Speed);
+                                _E.Cast(output.UnitPosition, true);
                             }
 
                         }

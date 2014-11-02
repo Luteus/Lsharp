@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using Evade;
 using LeagueSharp;
@@ -35,7 +36,7 @@ namespace Autocombo
 
             string[] champions = { "Ezreal", "Lux", "Ashe", "Draven", "Fizz", "Graves", "Riven", "Sona", "Jinx", "Caitlyn", "Riven" };
 
-            for (int i = 0; i <= 9; i++)
+            for (int i = 0; i < champions.Length; i++)
             {
                 if (Player.BaseSkinName == champions[i])
                 {
@@ -109,7 +110,7 @@ namespace Autocombo
  "LeonaSolarFlare", "RivenFengShuiEngine", "SejuaniGlacialPrisonStart", "shyvanatransformcast", "SonaCrescendo", "XerathArcaneBarrageWrapper", "ZiggsR",
  "CaitlynAceintheHole", "JinxRWrapper"};
 
-                for (int i = 0; i <= 18; i++)
+                for (int i = 0; i <= spelllist.Length; i++)
                 {
                     if (args.SData.Name == spelllist[i])
                     {
@@ -144,7 +145,7 @@ namespace Autocombo
                         }
                         else
                         {
-                            foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>())
+                            foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero != null && hero.IsValid && hero.IsVisible && !hero.IsDead && hero.IsEnemy))
                             {
                                 //   PredictionOutput allyOutput = Prediction.GetPrediction(enemy, 500, args.SData.LineWidth, args.SData.MissileSpeed);
 
@@ -166,7 +167,7 @@ namespace Autocombo
                                     }
                                 }
 
-                                if (enemy.IsEnemy && enemy.Distance(V2E(args.Start, args.End, enemy.Distance(sender.Position))) <= (spellData.Radius - 50))
+                                if (enemy.Distance(V2E(args.Start, args.End, enemy.Distance(sender.Position))) <= (spellData.Radius - 50))
                                 {
                                     Game.PrintChat("SkillShot Detected: " + args.SData.Name + " By: " + sender.BaseSkinName +
                                                        " Ally Casted it right.. On : " + enemy.BaseSkinName); //Checks..
