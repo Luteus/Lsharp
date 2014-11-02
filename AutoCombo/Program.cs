@@ -6,6 +6,7 @@ namespace Autocombo
         private static void Main(string[] args)
         {
             new Autocombo();
+            new AutoKS();
         }
     }
 }
