@@ -103,10 +103,13 @@ namespace Autocombo
                 {
                     
                     if (enemy.Distance(V2E(args.Start, args.End, enemy.Distance(sender.Position))) <=
-                        (200) || args.SData.Name.ToLower().Contains("attack") && args.Target == enemy)
+                        (200) || args.SData.Name.ToLower().Contains("attack"))
                     {
-                        Game.PrintChat("works");
-                        Game.PrintChat("enemy health: " + enemy.Health + " Total damage : " + Allydamage.CalculatedDamage + Mydamage.CalculatedDamage + "health after : " + (enemy.Health - (Allydamage.CalculatedDamage + Mydamage.CalculatedDamage)) + " " + args.SData.Name);
+                        
+                        
+                        
+                        
+                        Game.PrintChat("enemy health: " + enemy.Health + " Total damage : " + (Allydamage.CalculatedDamage + Mydamage.CalculatedDamage) + "health after : " + (enemy.Health - (Allydamage.CalculatedDamage + Mydamage.CalculatedDamage)) + " " + args.SData.Name);
                         Allydamage = sender.GetDamageSpell(enemy, args.SData.Name);
                         //Game.PrintChat(args.Target.Name + " " + sender.Name + " " + args.SData.Name + " " + Allydamage.CalculatedDamage);
                         
