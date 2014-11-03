@@ -34,7 +34,7 @@ namespace Reverse_Support
 
         private void OnGameUpdate(EventArgs args)
         {
-            if (Config.Item("Toggle").GetValue<bool>())
+            if (Config.Item("Toggle").GetValue<bool>() == true)
             {
                var getm = MinionManager.GetMinions(Player.Position, 500, MinionTypes.All, MinionTeam.Ally, MinionOrderTypes.Health);
                if (getm.Count == 0) return;
