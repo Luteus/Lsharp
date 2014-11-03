@@ -38,13 +38,10 @@ namespace Reverse_Support
             {
                var getm = MinionManager.GetMinions(Player.Position, 500, MinionTypes.All, MinionTeam.Ally, MinionOrderTypes.Health);
                if (getm.Count == 0) return;
-                foreach (var minion in getm)
-                {
-                    if (minion.Health <= Config.Item("Slider").GetValue<int>())
+                    if (getm[0].Health <= Config.Item("Slider").GetValue<Slider>().Value)// Fix!!
                     {
-                        Player.IssueOrder(GameObjectOrder.MoveTo, minion.Position);
+                        Player.IssueOrder(GameObjectOrder.MoveTo, getm[0].Position);
                     }
-                }
             }
         }
     }
