@@ -23,7 +23,7 @@ namespace Reverse_Support
             Config = new Menu("Hecarim Reverse Support", "Reverse", true);
             Config.AddToMainMenu();
             Config.AddSubMenu(new Menu("Reverse Support Settings", "Reverse"));
-            Config.SubMenu("Reverse").AddItem(new MenuItem("Toggle", "Activate?").SetValue(false));
+            Config.SubMenu("Reverse").AddItem(new MenuItem("Toggle", "Activate?").SetValue(new KeyBind("Z".ToCharArray()[0], KeyBindType.Toggle)));
 
             Config.SubMenu("Reverse").AddItem(new MenuItem("Slider", "Minion Health").SetValue(new Slider(100, 50, 500)));
             
