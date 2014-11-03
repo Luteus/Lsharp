@@ -40,7 +40,7 @@ namespace Reverse_Support
                if (getm.Count == 0) return;
                 foreach (var minion in getm)
                 {
-                    if (minion.Health <= Config.Item("Slider").GetValue<int>())
+                    if (minion.Health <= Config.Item("Slider").GetValue<Slider>().Value)// Fix!!
                     {
                         Player.IssueOrder(GameObjectOrder.MoveTo, minion.Position);
                     }
