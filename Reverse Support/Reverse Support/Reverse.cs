@@ -14,6 +14,7 @@ namespace Reverse_Support
     public Reverse_Support()
     {
         CustomEvents.Game.OnGameLoad += OnGameLoad;
+
     }
 
         private void OnGameLoad(EventArgs args)
@@ -34,11 +35,11 @@ namespace Reverse_Support
 
         private void OnGameUpdate(EventArgs args)
         {
-            if (Config.Item("Toggle").GetValue<KeyBind>().Active)
+            if (Config.Item("Toggle").GetValue<KeyBind>().Active) //works NOW :D!
             {
                var getm = MinionManager.GetMinions(Player.Position, 500, MinionTypes.All, MinionTeam.Ally, MinionOrderTypes.Health);
                if (getm.Count == 0) return;
-                    if (getm[0].Health <= Config.Item("Slider").GetValue<Slider>().Value)// Fix!!
+                    if (getm[0].Health <= Config.Item("Slider").GetValue<Slider>().Value)// 
                     {
                         Player.IssueOrder(GameObjectOrder.MoveTo, getm[0].Position);
                     }
