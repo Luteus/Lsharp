@@ -95,7 +95,8 @@ namespace Autocombo
         {
             return from.To2D() + distance * Vector3.Normalize(direction - from).To2D();
         }
-
+        // Need to add delay
+        // need to aadd auto attack !
 
         static void Game_OnGameProcessPacket(GamePacketEventArgs args)
         {
@@ -110,7 +111,7 @@ namespace Autocombo
                             Packet.MultiPacket.OnAttack.Decoded(args.PacketData).TargetNetworkId);
                     if (Player.Distance(target) <= _Q.Range || Player.Distance(target) <= _W.Range || Player.Distance(target) <= _E.Range)
                     {
-                        Game.PrintChat("Target is : " + target.BaseSkinName + " Ally Is : " + unit.BaseSkinName);
+
                         if (unit is Obj_AI_Hero && unit.IsAlly && target is Obj_AI_Hero && target.IsEnemy)
                         {
                             var damage = unit.CalcDamage(target, Damage.DamageType.Physical,
@@ -137,14 +138,30 @@ namespace Autocombo
                             {
                                 if (_Q.IsSkillshot && (Qdamage + damage) > target.Health && damage < target.Health && Player.Distance(target) < _Q.Range)
                                 {
-                                    _Q.Cast(target, true);
+                                    if ((unit.Distance(target) / unit.BasicAttack.MissileSpeed) + unit.BasicAttack.SpellCastTime < (Player.Distance(target) / _Q.Speed) + _Q.Delay)
+                                    {
+                                        _Q.Cast(target, true);
+                                    }
+                                    else if ((unit.Distance(target) / unit.BasicAttack.MissileSpeed) + unit.BasicAttack.SpellCastTime > (Player.Distance(target) / _Q.Speed) + _Q.Delay)
+                                    {
+                                        int n = (int)((unit.Distance(target) / unit.BasicAttack.MissileSpeed + unit.BasicAttack.SpellCastTime) * 1000);
+                                        Utility.DelayAction.Add(n, () => _Q.Cast(target, true));
+                                    }
                                 }
                             }
                             else if (Wdamage != 0 && Wdamage > Qdamage && Wdamage > Edamage)
                             {
                                 if (_W.IsSkillshot && (Wdamage + damage) > target.Health && damage < target.Health && Player.Distance(target) < _W.Range)
                                 {
-                                    _W.Cast(target, true);
+                                    if ((unit.Distance(target) / unit.BasicAttack.MissileSpeed) + unit.BasicAttack.SpellCastTime < (Player.Distance(target) / _W.Speed) + _W.Delay)
+                                    {
+                                        _W.Cast(target, true);
+                                    }
+                                    else if ((unit.Distance(target) / unit.BasicAttack.MissileSpeed) + unit.BasicAttack.SpellCastTime > (Player.Distance(target) / _W.Speed) + _W.Delay)
+                                    {
+                                        int n = (int)((unit.Distance(target) / unit.BasicAttack.MissileSpeed + unit.BasicAttack.SpellCastTime) * 1000);
+                                        Utility.DelayAction.Add(n, () => _W.Cast(target, true));
+                                    }
                                 }
 
                             }
@@ -152,7 +169,15 @@ namespace Autocombo
                             {
                                 if (_E.IsSkillshot && (Edamage + damage) > target.Health && damage < target.Health && Player.Distance(target) < _E.Range)
                                 {
-                                    _E.Cast(target, true);
+                                    if ((unit.Distance(target) / unit.BasicAttack.MissileSpeed) + unit.BasicAttack.SpellCastTime < (Player.Distance(target) / _E.Speed) + _E.Delay)
+                                    {
+                                        _E.Cast(target, true);
+                                    }
+                                    else if ((unit.Distance(target) / unit.BasicAttack.MissileSpeed) + unit.BasicAttack.SpellCastTime > (Player.Distance(target) / _E.Speed) + _E.Delay)
+                                    {
+                                        int n = (int)((unit.Distance(target) / unit.BasicAttack.MissileSpeed + unit.BasicAttack.SpellCastTime) * 1000);
+                                        Utility.DelayAction.Add(n, () => _E.Cast(target, true));
+                                    }
                                 }
                             }
 
