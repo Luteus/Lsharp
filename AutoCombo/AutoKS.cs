@@ -100,6 +100,7 @@ namespace Autocombo
 
         static void Game_OnGameProcessPacket(GamePacketEventArgs args)
         {
+            Game.PrintChat(_Q.IsSkillshot.ToString());
             GamePacket packet = new GamePacket(args.PacketData);
             if (packet.Header == 0xFE)
             {
