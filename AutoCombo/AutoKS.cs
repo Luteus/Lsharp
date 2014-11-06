@@ -28,6 +28,7 @@ namespace Autocombo
         {
             CustomEvents.Game.OnGameLoad += OnGameLoad;
             Obj_AI_Base.OnProcessSpellCast += ObjAiBaseOnProcessSpellCast;
+            Game.OnGameProcessPacket += Game_OnGameProcessPacket;
         }
 
         public void OnGameLoad(EventArgs args)
@@ -109,6 +110,7 @@ namespace Autocombo
                             Packet.MultiPacket.OnAttack.Decoded(args.PacketData).TargetNetworkId);
                     if (Player.Distance(target) <= _Q.Range || Player.Distance(target) <= _W.Range || Player.Distance(target) <= _E.Range)
                     {
+                        Game.PrintChat("Target is : " + target.BaseSkinName + " Ally Is : " + unit.BaseSkinName);
                         if (unit is Obj_AI_Hero && unit.IsAlly && target is Obj_AI_Hero && target.IsEnemy)
                         {
                             var damage = unit.CalcDamage(target, Damage.DamageType.Physical,
