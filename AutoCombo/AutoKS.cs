@@ -14,7 +14,7 @@ namespace Autocombo
     internal class AutoKS
     {
         public static Obj_AI_Hero Player;
-        public Menu Config;
+        public static Menu Config;
         public static Spell _Q;
         public static Spell _W;
         public static Spell _E;
@@ -30,7 +30,7 @@ namespace Autocombo
             Obj_AI_Base.OnProcessSpellCast += ObjAiBaseOnProcessSpellCast;
         }
 
-        private void OnGameLoad(EventArgs args)
+        public void OnGameLoad(EventArgs args)
         {
             Player = ObjectManager.Player;
 
@@ -118,27 +118,27 @@ namespace Autocombo
                             var Wdamage = _W.GetDamage(target);
                             var Edamage = _E.GetDamage(target);
 
-                            if (!_Q.IsReady())
+                            if (!_Q.IsReady() || !Config.Item("SKSQ").GetValue<bool>())
                             {
                                 Qdamage = 0;
                             }
-                            if (!_W.IsReady())
+                            if (!_W.IsReady() || !Config.Item("SKSW").GetValue<bool>())
                             {
                                 Wdamage = 0;
                             }
-                            if (!_E.IsReady())
+                            if (!_E.IsReady() && !Config.Item("SKSE").GetValue<bool>())
                             {
                                 Edamage = 0;
                             }
 
-                            if (Qdamage > Wdamage && Qdamage > Edamage)
+                            if (Qdamage != 0 && Qdamage > Wdamage && Qdamage > Edamage)
                             {
                                 if (_Q.IsSkillshot && (Qdamage + damage) > target.Health && damage < target.Health && Player.Distance(target) < _Q.Range)
                                 {
                                     _Q.Cast(target, true);
                                 }
                             }
-                            else if (Wdamage > Qdamage && Wdamage > Edamage)
+                            else if (Wdamage != 0 && Wdamage > Qdamage && Wdamage > Edamage)
                             {
                                 if (_W.IsSkillshot && (Wdamage + damage) > target.Health && damage < target.Health && Player.Distance(target) < _W.Range)
                                 {
@@ -146,7 +146,7 @@ namespace Autocombo
                                 }
 
                             }
-                            else if (Edamage > Qdamage && Edamage > Wdamage)
+                            else if (Edamage != 0 && Edamage > Qdamage && Edamage > Wdamage)
                             {
                                 if (_E.IsSkillshot && (Edamage + damage) > target.Health && damage < target.Health && Player.Distance(target) < _E.Range)
                                 {
