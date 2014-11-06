@@ -95,16 +95,82 @@ namespace Autocombo
             return from.To2D() + distance * Vector3.Normalize(direction - from).To2D();
         }
 
+
+        static void Game_OnGameProcessPacket(GamePacketEventArgs args)
+        {
+            GamePacket packet = new GamePacket(args.PacketData);
+            if (packet.Header == 0xFE)
+            {
+                if (Packet.MultiPacket.OnAttack.Decoded(args.PacketData).Type == Packet.AttackTypePacket.TargetedAA)
+                {
+                    var unit = ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(packet.ReadInteger());
+                    var target =
+                        ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(
+                            Packet.MultiPacket.OnAttack.Decoded(args.PacketData).TargetNetworkId);
+                    if (Player.Distance(target) <= _Q.Range || Player.Distance(target) <= _W.Range || Player.Distance(target) <= _E.Range)
+                    {
+                        if (unit is Obj_AI_Hero && unit.IsAlly && target is Obj_AI_Hero && target.IsEnemy)
+                        {
+                            var damage = unit.CalcDamage(target, Damage.DamageType.Physical,
+                                (unit.BaseAttackDamage + unit.FlatPhysicalDamageMod));
+
+                            var Qdamage = _Q.GetDamage(target);
+                            var Wdamage = _W.GetDamage(target);
+                            var Edamage = _E.GetDamage(target);
+
+                            if (!_Q.IsReady())
+                            {
+                                Qdamage = 0;
+                            }
+                            if (!_W.IsReady())
+                            {
+                                Wdamage = 0;
+                            }
+                            if (!_E.IsReady())
+                            {
+                                Edamage = 0;
+                            }
+
+                            if (Qdamage > Wdamage && Qdamage > Edamage)
+                            {
+                                if (_Q.IsSkillshot && (Qdamage + damage) > target.Health && damage < target.Health && Player.Distance(target) < _Q.Range)
+                                {
+                                    _Q.Cast(target, true);
+                                }
+                            }
+                            else if (Wdamage > Qdamage && Wdamage > Edamage)
+                            {
+                                if (_W.IsSkillshot && (Wdamage + damage) > target.Health && damage < target.Health && Player.Distance(target) < _W.Range)
+                                {
+                                    _W.Cast(target, true);
+                                }
+
+                            }
+                            else if (Edamage > Qdamage && Edamage > Wdamage)
+                            {
+                                if (_E.IsSkillshot && (Edamage + damage) > target.Health && damage < target.Health && Player.Distance(target) < _E.Range)
+                                {
+                                    _E.Cast(target, true);
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+
+
         private void ObjAiBaseOnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            if (sender.IsAlly && !sender.IsMe && !sender.IsMinion && !args.Target.Name.ToLower().Contains("minion"))
+            if (sender.IsAlly && !sender.IsMe && !sender.IsMinion)
             {
-                
+
                 foreach (Obj_AI_Hero enemy in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero != null && hero.IsValid && hero.IsVisible && !hero.IsDead && hero.IsEnemy))
                 {
-                    
+
                     if (enemy.Distance(V2E(args.Start, args.End, enemy.Distance(sender.Position))) <=
-                        (200) || args.SData.Name.ToLower().Contains("attack") && args.Target == enemy)
+                        (200))
                     {
                         Allydamage = sender.GetDamageSpell(enemy, args.SData.Name);
 
@@ -124,7 +190,7 @@ namespace Autocombo
                         if ((Config.Item("SKSW").GetValue<bool>()))
                         {
                             Mydamage = Player.GetDamageSpell(enemy, SpellSlot.W);
-                            
+
                             if ((enemy.Distance(Player) <= _W.Range) && (Allydamage.CalculatedDamage + Mydamage.CalculatedDamage) > enemy.Health &&
                                 Allydamage.CalculatedDamage < enemy.Health)
                             {
