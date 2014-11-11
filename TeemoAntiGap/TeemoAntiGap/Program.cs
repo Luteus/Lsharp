@@ -13,6 +13,7 @@ namespace TeemoAntiGap
     {
         public static Obj_AI_Hero Player;
         public static Spell _R;
+        public static Spell _W;
         static void Main(string[] args)
         {
             CustomEvents.Game.OnGameLoad += OnGameLoad;
@@ -20,23 +21,34 @@ namespace TeemoAntiGap
 
         private static void OnGameLoad(EventArgs args)
         {
-            _R = new Spell(SpellSlot.R, 300);
+            _R = new Spell(SpellSlot.R, 200);
+            _W = new Spell(SpellSlot.W);
             Player = ObjectManager.Player;
             AntiGapcloser.OnEnemyGapcloser += OnEnemyGapcloser;
+            Game.PrintChat("Loaded Teemo Antigap");
         }
-
-        private static void OnEnemyGapcloser(ActiveGapcloser gapcloser)
+        public static void OnEnemyGapcloser(ActiveGapcloser gapcloser)
         {
-            if (Player.Distance(gapcloser.End) <= 300)
+            Game.PrintChat("1"); //debugging
+            if (Player.Distance(gapcloser.End) <= 200)
             {
+                
                 if (Player.IsFacing(gapcloser.Sender))
                 {
+                    Game.PrintChat("2"); //debugging
+                    _W.Cast(true);
                     _R.Cast(gapcloser.End, true);
                 }
                 else
                 {
+                    Game.PrintChat("3"); //debugging
                     _R.Cast(Player.Position + (Player.Direction * 150), true);
                 }
+            }
+            if (Player.Distance(gapcloser.End) <= 600)
+            {
+                Game.PrintChat("4"); //debugging
+                _R.Cast(Player.Position + (Player.Direction * 150), true);
             }
         }
     }

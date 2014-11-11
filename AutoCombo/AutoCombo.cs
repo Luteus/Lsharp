@@ -32,68 +32,9 @@ namespace Autocombo
             Config.SubMenu("AutoCombo").AddItem(new MenuItem("Killable", "Combo Only Killable?").SetValue(true));
             Game.PrintChat("<font color='#F7A100'>Auto Combo by XcxooxL Loaded 1.0 .</font>");
             Game.PrintChat("<font color='#F7A100'>Credits to Diabaths and Pingo for helping me test =] </font>");
-            
+            checkChamp();
+            setUltimate();
 
-            string[] champions = { "Ezreal", "Lux", "Ashe", "Draven", "Fizz", "Graves", "Riven", "Sona", "Jinx", "Caitlyn", "Riven" };
-
-            for (int i = 0; i < champions.Length; i++)
-            {
-                if (Player.BaseSkinName == champions[i])
-                {
-                    Game.PrintChat("<font color='#F7A100'>Champion : " + champions[i] + " Detected And Loaded !!" + " .</font>");
-                }
-            }
-
-            if (Player.BaseSkinName == "Ezreal")
-            {
-                R = new Spell(SpellSlot.R, 2000);
-                R.SetSkillshot(0.25f, 150f, 2000f, false, SkillshotType.SkillshotLine);
-            }
-            if (Player.BaseSkinName == "Lux")
-            {
-                R = new Spell(SpellSlot.R, 3200);
-                R.SetSkillshot(0.25f, 150f, 3000f, false, SkillshotType.SkillshotLine);
-            }
-            if (Player.BaseSkinName == "Ashe")
-            {
-                R = new Spell(SpellSlot.R, 2000);
-                R.SetSkillshot(0.25f, 130f, 1600f, false, SkillshotType.SkillshotLine);
-            }
-            if (Player.BaseSkinName == "Draven")
-            {
-                R = new Spell(SpellSlot.R, 2000);
-                R.SetSkillshot(0.25f, 120f, 2000f, false, SkillshotType.SkillshotLine);
-            }
-            if (Player.BaseSkinName == "Fizz")
-            {
-                R = new Spell(SpellSlot.R, 1275);
-                R.SetSkillshot(0.25f, 80f, 1200f, false, SkillshotType.SkillshotLine);
-            }
-            if (Player.BaseSkinName == "Graves")
-            {
-                R = new Spell(SpellSlot.R, 1000);
-                R.SetSkillshot(0.25f, 100f, 1400f, false, SkillshotType.SkillshotLine);
-            }
-            if (Player.BaseSkinName == "Sona")
-            {
-                R = new Spell(SpellSlot.R, 2400);
-                R.SetSkillshot(0.25f, 140f, 1400f, false, SkillshotType.SkillshotLine);
-            }
-            if (Player.BaseSkinName == "Jinx")
-            {
-                R = new Spell(SpellSlot.R, 2000);
-                R.SetSkillshot(0.25f, 120f, 1400f, false, SkillshotType.SkillshotLine);
-            }
-            if (Player.BaseSkinName == "Caitlyn")
-            {
-                R = new Spell(SpellSlot.R, 2000);
-                R.SetTargetted(0.5f, 2000, Player.Position);
-            }
-            if (Player.BaseSkinName == "Riven")
-            {
-                R = new Spell(SpellSlot.R, 1100);
-                R.SetSkillshot(0.25f, 125, 2200, false, SkillshotType.SkillshotCone);
-            }
         }
 
         static Vector2 V2E(Vector3 from, Vector3 direction, float distance)
@@ -191,6 +132,71 @@ namespace Autocombo
                         }
                     }
                 }
+            }
+        }
+        private void checkChamp()
+        {
+            string[] champions = { "Ezreal", "Lux", "Ashe", "Draven", "Fizz", "Graves", "Riven", "Sona", "Jinx", "Caitlyn", "Riven" };
+            for (int i = 0; i <= 9; i++)
+            {
+                if (Player.ChampionName == champions[i])
+                {
+                    Game.PrintChat("<font color='#F7A100'>Champion : " + champions[i] + " Detected And Loaded !!" + " .</font>");
+                }
+            }
+        }
+
+        private void setUltimate()
+        {
+            if (Player.BaseSkinName == "Ezreal")
+            {
+                R = new Spell(SpellSlot.R, 2000);
+                R.SetSkillshot(0.25f, 150f, 2000f, false, SkillshotType.SkillshotLine);
+            }
+            if (Player.BaseSkinName == "Lux")
+            {
+                R = new Spell(SpellSlot.R, 3200);
+                R.SetSkillshot(0.25f, 150f, 3000f, false, SkillshotType.SkillshotLine);
+            }
+            if (Player.BaseSkinName == "Ashe")
+            {
+                R = new Spell(SpellSlot.R, 2000);
+                R.SetSkillshot(0.25f, 130f, 1600f, false, SkillshotType.SkillshotLine);
+            }
+            if (Player.BaseSkinName == "Draven")
+            {
+                R = new Spell(SpellSlot.R, 2000);
+                R.SetSkillshot(0.25f, 120f, 2000f, false, SkillshotType.SkillshotLine);
+            }
+            if (Player.BaseSkinName == "Fizz")
+            {
+                R = new Spell(SpellSlot.R, 1275);
+                R.SetSkillshot(0.25f, 80f, 1200f, false, SkillshotType.SkillshotLine);
+            }
+            if (Player.BaseSkinName == "Graves")
+            {
+                R = new Spell(SpellSlot.R, 1000);
+                R.SetSkillshot(0.25f, 100f, 1400f, false, SkillshotType.SkillshotLine);
+            }
+            if (Player.BaseSkinName == "Sona")
+            {
+                R = new Spell(SpellSlot.R, 2400);
+                R.SetSkillshot(0.25f, 140f, 1400f, false, SkillshotType.SkillshotLine);
+            }
+            if (Player.BaseSkinName == "Jinx")
+            {
+                R = new Spell(SpellSlot.R, 2000);
+                R.SetSkillshot(0.25f, 120f, 1400f, false, SkillshotType.SkillshotLine);
+            }
+            if (Player.BaseSkinName == "Caitlyn")
+            {
+                R = new Spell(SpellSlot.R, 2000);
+                R.SetTargetted(0.5f, 2000, Player.Position);
+            }
+            if (Player.BaseSkinName == "Riven")
+            {
+                R = new Spell(SpellSlot.R, 1100);
+                R.SetSkillshot(0.25f, 125, 2200, false, SkillshotType.SkillshotCone);
             }
         }
     }

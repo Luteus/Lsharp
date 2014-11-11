@@ -52,11 +52,13 @@ namespace Autocombo
                 Config.SubMenu("AutoCombo").AddItem(new MenuItem("SKSQ", "Use Q?").SetValue(true));
                 _Q = new Spell(SpellSlot.Q, dataQ.Range);
                 if (_Q.IsSkillshot)
-                {
+                {  
+                    Game.PrintChat("Skillshot");
                     _Q.SetSkillshot(dataQ.Delay / 1000f, dataQ.Radius, dataQ.MissileSpeed, true, SkillshotType.SkillshotLine);
                 }
                 else
                 {
+                    Game.PrintChat("Not Skillshot");
                     _Q.SetTargetted(dataQ.Delay / 1000f, dataQ.MissileSpeed);
                 }
             }
