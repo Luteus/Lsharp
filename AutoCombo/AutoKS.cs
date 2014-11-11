@@ -91,7 +91,7 @@ if (packet.Header == 0xFE)
 
                 if (Qdamage != 0 && Qdamage > Wdamage && Qdamage > Edamage)
                 {
-                    if (_Q.IsSkillshot && (Qdamage + damage) > target.Health && damage < target.Health && Player.Distance(target) < _Q.Range)
+                    if ((Qdamage + damage) > target.Health && damage < target.Health && Player.Distance(target) < _Q.Range)
                     {
                         if ((unit.Distance(target) / unit.BasicAttack.MissileSpeed) + unit.BasicAttack.SpellCastTime < (Player.Distance(target) / _Q.Speed) + _Q.Delay)
                         {
@@ -99,13 +99,14 @@ if (packet.Header == 0xFE)
                         }
                         else if ((unit.Distance(target) / unit.BasicAttack.MissileSpeed) + unit.BasicAttack.SpellCastTime > (Player.Distance(target) / _Q.Speed) + _Q.Delay)
                         {
+                            Game.PrintChat(Func._Time(target, unit).ToString());
                             Utility.DelayAction.Add(Func._Time(target, unit), () => _E.Cast(target, true));
                         }
                     }
                 }
                 else if (Wdamage != 0 && Wdamage > Qdamage && Wdamage > Edamage)
                 {
-                    if (_W.IsSkillshot && (Wdamage + damage) > target.Health && damage < target.Health && Player.Distance(target) < _W.Range)
+                    if ((Wdamage + damage) > target.Health && damage < target.Health && Player.Distance(target) < _W.Range)
                     {
                         if ((unit.Distance(target) / unit.BasicAttack.MissileSpeed) + unit.BasicAttack.SpellCastTime < (Player.Distance(target) / _W.Speed) + _W.Delay)
                         {
@@ -120,7 +121,7 @@ if (packet.Header == 0xFE)
                 }
                 else if (Edamage != 0 && Edamage > Qdamage && Edamage > Wdamage)
                 {
-                    if (_E.IsSkillshot && (Edamage + damage) > target.Health && damage < target.Health && Player.Distance(target) < _E.Range)
+                    if ((Edamage + damage) > target.Health && damage < target.Health && Player.Distance(target) < _E.Range)
                     {
                         if ((unit.Distance(target) / unit.BasicAttack.MissileSpeed) + unit.BasicAttack.SpellCastTime < (Player.Distance(target) / _E.Speed) + _E.Delay)
                         {
@@ -150,21 +151,16 @@ private void SetSpells()
     {
         Config.SubMenu("AutoCombo").AddItem(new MenuItem("SKSQ", "Use Q?").SetValue(true));
         _Q = new Spell(SpellSlot.Q, dataQ.Range);
-        if (_Q.IsSkillshot)
-        {
             Game.PrintChat("Skillshot");
             _Q.SetSkillshot(dataQ.Delay / 1000f, dataQ.Radius, dataQ.MissileSpeed, true, SkillshotType.SkillshotLine);
-        }
     }
 
     if (dataW != null)
     {
         Config.SubMenu("AutoCombo").AddItem(new MenuItem("SKSW", "Use W?").SetValue(true));
         _W = new Spell(SpellSlot.W, dataW.Range);
-        if (_W.IsSkillshot)
-        {
             _W.SetSkillshot(dataW.Delay / 1000f, dataW.Radius, dataW.MissileSpeed, false, (SkillshotType)dataW.Type);
-        }
+
 
     }
     if (dataE != null)
@@ -172,10 +168,7 @@ private void SetSpells()
         Config.SubMenu("AutoCombo").AddItem(new MenuItem("SKSE", "Use E?").SetValue(true));
         _E = new Spell(SpellSlot.E, SpellDatabase.GetByName(se).Range);
 
-        if (_E.IsSkillshot)
-        {
             _E.SetSkillshot(dataE.Delay / 1000f, dataE.Radius, dataE.MissileSpeed, true, (SkillshotType)dataE.Type);
-        }
 
     }
 }
