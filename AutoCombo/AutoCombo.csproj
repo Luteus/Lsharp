@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="AutoCombo.cs" />
     <Compile Include="AutoKS.cs" />
+    <Compile Include="Functions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
