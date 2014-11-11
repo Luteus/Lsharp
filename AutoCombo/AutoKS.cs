@@ -40,9 +40,6 @@ namespace Autocombo
             sw = ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).SData.Name;
             se = ObjectManager.Player.Spellbook.GetSpell(SpellSlot.E).SData.Name;
             SetSpells();
-            Config = new Menu("Auto KillSecure", "AutoCombo", true);
-            Config.AddToMainMenu();
-            Config.AddSubMenu(new Menu("AutoKillSteal Settings", "AutoCombo"));
         }
 
         static Vector2 V2E(Vector3 from, Vector3 direction, float distance)
@@ -58,7 +55,6 @@ namespace Autocombo
 
             if (packet.Header == 0xFE)
             {
-                Game.PrintChat(_Q.IsReady().ToString());
                 if (Packet.MultiPacket.OnAttack.Decoded(args.PacketData).Type == Packet.AttackTypePacket.TargetedAA)
                 {
                     var unit = ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(packet.ReadInteger());
@@ -146,6 +142,9 @@ namespace Autocombo
             var dataQ = SpellDatabase.GetByName(sq);
             var dataW = SpellDatabase.GetByName(sw);
             var dataE = SpellDatabase.GetByName(se);
+            Config = new Menu("Auto KillSecure", "AutoCombo", true);
+            Config.AddToMainMenu();
+            Config.AddSubMenu(new Menu("AutoKillSteal Settings", "AutoCombo"));
 
             if (dataQ != null)
             {
@@ -167,9 +166,7 @@ namespace Autocombo
             {
                 Config.SubMenu("AutoCombo").AddItem(new MenuItem("SKSE", "Use E?").SetValue(true));
                 _E = new Spell(SpellSlot.E, SpellDatabase.GetByName(se).Range);
-
                 _E.SetSkillshot(dataE.Delay / 1000f, dataE.Radius, dataE.MissileSpeed, true, (SkillshotType)dataE.Type);
-
             }
         }
 
