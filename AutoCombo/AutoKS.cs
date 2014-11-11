@@ -63,32 +63,20 @@ namespace Autocombo
                             Packet.MultiPacket.OnAttack.Decoded(args.PacketData).TargetNetworkId);
                     if (Player.Distance(target) <= _Q.Range || Player.Distance(target) <= _W.Range || Player.Distance(target) <= _E.Range)
                     {
-
-                        if (unit is Obj_AI_Hero && unit.IsAlly && target is Obj_AI_Hero && target.IsEnemy)
+                        
+                        if (unit.IsAlly && target.IsEnemy)
                         {
                             var damage = unit.CalcDamage(target, Damage.DamageType.Physical,
                                 (unit.BaseAttackDamage + unit.FlatPhysicalDamageMod));
 
-                            var Qdamage = _Q.GetDamage(target);
-                            var Wdamage = _W.GetDamage(target);
-                            var Edamage = _E.GetDamage(target);
+                            var qdamage = _Q.GetDamage(target);
+                            var wdamage = _W.GetDamage(target);
+                            var edamage = _E.GetDamage(target);
 
-                            if (!_Q.IsReady() || !Config.Item("SKSQ").GetValue<bool>())
+                            Game.PrintChat("here");
+                            if (_Q.IsReady() && qdamage > wdamage && qdamage > edamage)
                             {
-                                Qdamage = 0;
-                            }
-                            if (!_W.IsReady() || !Config.Item("SKSW").GetValue<bool>())
-                            {
-                                Wdamage = 0;
-                            }
-                            if (!_E.IsReady() && !Config.Item("SKSE").GetValue<bool>())
-                            {
-                                Edamage = 0;
-                            }
-
-                            if (Qdamage != 0 && Qdamage > Wdamage && Qdamage > Edamage)
-                            {
-                                if ((Qdamage + damage) > target.Health && damage < target.Health && Player.Distance(target) < _Q.Range)
+                                if ((qdamage + damage) > target.Health && damage < target.Health && Player.Distance(target) < _Q.Range)
                                 {
                                     if ((unit.Distance(target) / unit.BasicAttack.MissileSpeed) + unit.BasicAttack.SpellCastTime < (Player.Distance(target) / _Q.Speed) + _Q.Delay)
                                     {
@@ -97,13 +85,13 @@ namespace Autocombo
                                     else if ((unit.Distance(target) / unit.BasicAttack.MissileSpeed) + unit.BasicAttack.SpellCastTime > (Player.Distance(target) / _Q.Speed) + _Q.Delay)
                                     {
                                         Game.PrintChat(Func._Time(target, unit).ToString());
-                                        Utility.DelayAction.Add(Func._Time(target, unit), () => _E.Cast(target, true));
+                                        Utility.DelayAction.Add(Func._Time(target, unit), () => _Q.Cast(target, true));
                                     }
                                 }
                             }
-                            else if (Wdamage != 0 && Wdamage > Qdamage && Wdamage > Edamage)
+                            else if (_W.IsReady() && wdamage > qdamage && wdamage > edamage)
                             {
-                                if ((Wdamage + damage) > target.Health && damage < target.Health && Player.Distance(target) < _W.Range)
+                                if ((wdamage + damage) > target.Health && damage < target.Health && Player.Distance(target) < _W.Range)
                                 {
                                     if ((unit.Distance(target) / unit.BasicAttack.MissileSpeed) + unit.BasicAttack.SpellCastTime < (Player.Distance(target) / _W.Speed) + _W.Delay)
                                     {
@@ -111,14 +99,14 @@ namespace Autocombo
                                     }
                                     else if ((unit.Distance(target) / unit.BasicAttack.MissileSpeed) + unit.BasicAttack.SpellCastTime > (Player.Distance(target) / _W.Speed) + _W.Delay)
                                     {
-                                        Utility.DelayAction.Add(Func._Time(target, unit), () => _E.Cast(target, true));
+                                        Utility.DelayAction.Add(Func._Time(target, unit), () => _W.Cast(target, true));
                                     }
                                 }
 
                             }
-                            else if (Edamage != 0 && Edamage > Qdamage && Edamage > Wdamage)
+                            else if (_E.IsReady() && edamage > qdamage && edamage > wdamage)
                             {
-                                if ((Edamage + damage) > target.Health && damage < target.Health && Player.Distance(target) < _E.Range)
+                                if ((edamage + damage) > target.Health && damage < target.Health && Player.Distance(target) < _E.Range)
                                 {
                                     if ((unit.Distance(target) / unit.BasicAttack.MissileSpeed) + unit.BasicAttack.SpellCastTime < (Player.Distance(target) / _E.Speed) + _E.Delay)
                                     {
