@@ -92,34 +92,28 @@ namespace Quinn
 
             var vTarget = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Physical);
 
-            if (!IsValorMode() && R.IsReady() && vTarget.Distance(Player) <= E.Range + 200  && countEnemies() < 3)// probably will cancel ulti too fast.. need to make  state check like jackisback
+            if (!IsValorMode() && R.IsReady() && vTarget.Distance(Player) <= E.Range + 200 && countEnemies() < 3 && Config.Item("UseR").GetValue<bool>())// probably will cancel ulti too fast.. need to make  state check like jackisback
             {
                 R.Cast(true);
             }
 
             if (!IsValorMode())
             {
-                if (!Config.Item("Double").GetValue<bool>())
+                if (Config.Item("Double").GetValue<bool>() && E.IsReady() && Config.Item("UseE").GetValue<bool>())
+                {
+                    if (!vTarget.HasBuff("QuinnW"))
+                    {
+                        E.CastOnUnit(vTarget, true);
+                    }
+                }
+                if (!Config.Item("Double").GetValue<bool>() && Config.Item("UseE").GetValue<bool>())
                 {
                     E.CastOnUnit(vTarget, true);
                 }
-                
                 if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>())
                 {
                     Q.Cast(vTarget, true);
                 }
-
-
-                if (E.IsReady() && Config.Item("UseE").GetValue<bool>())
-                {
-                    if (Config.Item("Double").GetValue<bool>() && vTarget.HasBuff("QuinnW")) // need to check again buffs !!
-                    {
-                        return;
-                    }
-                    E.CastOnUnit(vTarget, true);
-                }
-
-
             }
             else // if IN valor mode do this
             {
@@ -127,23 +121,23 @@ namespace Quinn
                 if (Config.Item("UseER").GetValue<bool>()) // will use E after R to return to human form
                 {
                     E.CastOnUnit(vTarget, true);
-                    if (vTarget.Distance(Player) <= 500)
+                    if (vTarget.Distance(Player) <= 400)
                     {
-                        R.Cast();
+                        R.Cast(true);
                     }
                     
                 }
-                else if (Config.Item("UseE").GetValue<bool>())
+                else if (Config.Item("UseE").GetValue<bool>() && E.IsReady())
                 {
                     E.CastOnUnit(vTarget);
                 }
 
-                if (Player.Distance(vTarget) <= 350 && Config.Item("UseQ").GetValue<bool>())
+                if (Player.Distance(vTarget) <= 350 && Config.Item("UseQ").GetValue<bool>() && Q.IsReady())
                 {
                     Q.Cast(true);
                 }
 
-                if (!E.IsReady() && !Q.IsReady() && Player.IsFacing(vTarget) && R.IsReady()) //is facing just so you wont cancel valor if you are trying to run away :S
+                if (!E.IsReady() && !Q.IsReady() && Player.IsFacing(vTarget) && vTarget.IsFacing(Player) && R.IsReady()) //is facing just so you wont cancel valor if you are trying to run away :S
                 {
                     R.Cast();
                 }
