@@ -13,44 +13,47 @@ namespace Quinn
     {
         public const string Champion = "Quinn";
         public static Orbwalking.Orbwalker Orbwalker;
-        public static Spell Q, W, E, R;
+        public static Spell Q, E, R;
         public static Menu Config;
         private static Obj_AI_Hero Player;
 
 
         static void Main(string[] args)
         {
-            CustomEvents.Game.OnGameLoad += onGameLoad;
-            
+            CustomEvents.Game.OnGameLoad += OnGameLoad;
         }
 
-        private static void onGameLoad(EventArgs args)
+        private static void OnGameLoad(EventArgs args)
         {
-            AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
-            Game.OnGameUpdate += game_Update;
+            Player = ObjectManager.Player;
+
             Q = new Spell(SpellSlot.Q, 1010);
             E = new Spell(SpellSlot.E, 800);
             R = new Spell(SpellSlot.R, 550);
 
-            
-
-            Q.SetSkillshot(0.25f, 160f, 1150, true, SkillshotType.SkillshotLine);
+            Q.SetSkillshot(0.25f, 80f, 1150, true, SkillshotType.SkillshotLine);
             E.SetTargetted(0.25f, 2000f);
 
-
-            Config = new Menu("Xcxooxl " + Champion, Champion, true);
+            Config = new Menu("Xcxooxl", "Xcxooxl", true);
             var targetSelectorMenu = new Menu("Target Selector", "Target Selector");
             SimpleTs.AddToMenu(targetSelectorMenu);
             Config.AddSubMenu(targetSelectorMenu);
             Config.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
             Orbwalker = new Orbwalking.Orbwalker(Config.SubMenu("Orbwalking"));
             Config.AddSubMenu(new Menu("Combo", "Combo"));
-            Config.AddItem(new MenuItem("UseQ", "USE Q in Combo?")).SetValue(true);
-            Config.AddItem(new MenuItem("UseE", "Use E in Combo?")).SetValue(true);
-            Config.AddItem(new MenuItem("UseR", "Use R in Combo?")).SetValue(true);
-            Config.AddItem(new MenuItem("UseER", "Use ER when in valor mode?")).SetValue(true);
+            Config.SubMenu("Combo").AddItem(new MenuItem("UseQ", "Use Q?").SetValue(true));
+            Config.SubMenu("Combo").AddItem(new MenuItem("UseE", "Use E?").SetValue(true));
+            Config.SubMenu("Combo").AddItem(new MenuItem("UseR", "Use R?").SetValue(true));
+            Config.SubMenu("Combo").AddItem(new MenuItem("WaitH", "Dont E if target has Harrier").SetValue(true));
+            Config.SubMenu("Combo").AddItem(new MenuItem("UseER", "Use ER valor mode (burst)").SetValue(true));
+            Config.SubMenu("Combo").AddItem(new MenuItem("Double", "Double Harrier").SetValue(true));
+            Config.AddToMainMenu();
+
+            AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
+            Game.OnGameUpdate += game_Update;
 
         }
+
 
         private static void game_Update(EventArgs args)
         {
@@ -58,7 +61,7 @@ namespace Quinn
             {
                 Combo();
             }
-            if (Orbwalker.ActiveMode.ToString().ToLower() == "Harras")
+            if (Orbwalker.ActiveMode.ToString().ToLower() == "mixed")
             {
                 Harras();
             }
@@ -70,7 +73,7 @@ namespace Quinn
                 E.CastOnUnit(gapcloser.Sender);
         }
 
-        private int countEnemies()
+        private static int countEnemies()
         {
             return DevHelper.CountEnemyInPositionRange(Player.Position, 1100);
         }
@@ -78,7 +81,7 @@ namespace Quinn
         private static void Harras()
         {
             var vTarget = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical);
-            if (Q.IsReady() && vTarget.IsValid)
+            if (Q.IsReady() && Config.Item("UseQH").GetValue<bool>())
             {
                 Q.Cast(vTarget);
             }
@@ -86,7 +89,9 @@ namespace Quinn
 
         private static void Combo()
         {
+
             var vTarget = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Physical);
+
             if (!IsValorMode() && R.IsReady() && vTarget.Distance(Player) <= E.Range + 200  && countEnemies() < 3)// probably will cancel ulti too fast.. need to make  state check like jackisback
             {
                 R.Cast(true);
@@ -94,26 +99,46 @@ namespace Quinn
 
             if (!IsValorMode())
             {
-                if (E.IsReady())
+                if (!Config.Item("Double").GetValue<bool>())
                 {
                     E.CastOnUnit(vTarget, true);
                 }
-
-                if (Q.IsReady())
+                
+                if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>())
                 {
                     Q.Cast(vTarget, true);
                 }
+
+
+                if (E.IsReady() && Config.Item("UseE").GetValue<bool>())
+                {
+                    if (Config.Item("Double").GetValue<bool>() && vTarget.HasBuff("QuinnW")) // need to check again buffs !!
+                    {
+                        return;
+                    }
+                    E.CastOnUnit(vTarget, true);
+                }
+
+
             }
             else // if IN valor mode do this
             {
-                E.CastOnUnit(vTarget, true);
 
-                if (Config.Item("UseER").GetValue<bool>())
+                if (Config.Item("UseER").GetValue<bool>()) // will use E after R to return to human form
                 {
-                    R.Cast();
+                    E.CastOnUnit(vTarget, true);
+                    if (vTarget.Distance(Player) <= 500)
+                    {
+                        R.Cast();
+                    }
+                    
+                }
+                else if (Config.Item("UseE").GetValue<bool>())
+                {
+                    E.CastOnUnit(vTarget);
                 }
 
-                if (Player.Distance(vTarget) <= 350)
+                if (Player.Distance(vTarget) <= 350 && Config.Item("UseQ").GetValue<bool>())
                 {
                     Q.Cast(true);
                 }
