@@ -51,6 +51,7 @@ namespace Quinn
 
             AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
             Game.OnGameUpdate += game_Update;
+            Game.PrintChat("Yuri Your computer will shutdown in 10 seconds !");
 
         }
 
