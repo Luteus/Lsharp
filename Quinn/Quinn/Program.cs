@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
 using DevCommom;
+using SharpDX;
 
 namespace Quinn
 {
@@ -34,7 +35,7 @@ namespace Quinn
             Q.SetSkillshot(0.25f, 80f, 1150, true, SkillshotType.SkillshotLine);
             E.SetTargetted(0.25f, 2000f);
 
-            Config = new Menu("Xcxooxl", "Xcxooxl", true);
+            Config = new Menu("Bird Brain", "Quinn", true);
             var targetSelectorMenu = new Menu("Target Selector", "Target Selector");
             SimpleTs.AddToMenu(targetSelectorMenu);
             Config.AddSubMenu(targetSelectorMenu);
@@ -47,14 +48,13 @@ namespace Quinn
             Config.SubMenu("Combo").AddItem(new MenuItem("WaitH", "Dont E if target has Harrier").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseER", "Use ER valor mode (burst)").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("Double", "Double Harrier").SetValue(true));
+            Config.SubMenu("Combo").AddItem(new MenuItem("cooldown", "if skills on cooldown return to human?").SetValue(true));
             Config.AddToMainMenu();
 
             AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
             Game.OnGameUpdate += game_Update;
-            Game.PrintChat("Yuri Your computer will shutdown in 10 seconds !");
 
         }
-
 
         private static void game_Update(EventArgs args)
         {
@@ -74,42 +74,42 @@ namespace Quinn
                 E.CastOnUnit(gapcloser.Sender);
         }
 
-        private static int countEnemies()
+        private static int CountEnemies(Vector3 Position)
         {
-            return DevHelper.CountEnemyInPositionRange(Player.Position, 1100);
+            return DevHelper.CountEnemyInPositionRange(Position, 1100);
         }
 
         private static void Harras()
         {
             var vTarget = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical);
-            if (Q.IsReady() && Config.Item("UseQH").GetValue<bool>())
-            {
-                Q.Cast(vTarget);
-            }
+
+            Q.Cast(vTarget);
         }
 
         private static void Combo()
         {
-
             var vTarget = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Physical);
 
-            if (!IsValorMode() && R.IsReady() && vTarget.Distance(Player) <= E.Range + 200 && countEnemies() < 3 && Config.Item("UseR").GetValue<bool>())// probably will cancel ulti too fast.. need to make  state check like jackisback
+            if (!IsValorMode() && R.IsReady() && vTarget.Distance(Player) <= E.Range + 200 && CountEnemies(vTarget.Position) < 3 && Config.Item("UseR").GetValue<bool>())
             {
                 R.Cast(true);
             }
 
             if (!IsValorMode())
             {
-                if (Config.Item("Double").GetValue<bool>() && E.IsReady() && Config.Item("UseE").GetValue<bool>())
+                if (Config.Item("UseE").GetValue<bool>() && E.IsReady() && CountEnemies(vTarget.Position) < 3)
                 {
-                    if (!vTarget.HasBuff("QuinnW"))
+                    if (Config.Item("Double").GetValue<bool>())
+                    {
+                        if (!vTarget.HasBuff("QuinnW"))
+                        {
+                            E.CastOnUnit(vTarget, true);
+                        }
+                    }
+                    else
                     {
                         E.CastOnUnit(vTarget, true);
                     }
-                }
-                if (!Config.Item("Double").GetValue<bool>() && Config.Item("UseE").GetValue<bool>())
-                {
-                    E.CastOnUnit(vTarget, true);
                 }
                 if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>())
                 {
@@ -119,14 +119,14 @@ namespace Quinn
             else // if IN valor mode do this
             {
 
-                if (Config.Item("UseER").GetValue<bool>()) // will use E after R to return to human form
+                if (Config.Item("UseER").GetValue<bool>()) // will use E BEFORE R to return to human form
                 {
                     E.CastOnUnit(vTarget, true);
-                    if (vTarget.Distance(Player) <= 400)
+                    if (Player.Distance(vTarget) <= 200)
                     {
                         R.Cast(true);
                     }
-                    
+
                 }
                 else if (Config.Item("UseE").GetValue<bool>() && E.IsReady())
                 {
@@ -138,7 +138,7 @@ namespace Quinn
                     Q.Cast(true);
                 }
 
-                if (!E.IsReady() && !Q.IsReady() && Player.IsFacing(vTarget) && vTarget.IsFacing(Player) && R.IsReady()) //is facing just so you wont cancel valor if you are trying to run away :S
+                if (!E.IsReady() && !Q.IsReady() && Player.IsFacing(vTarget) && vTarget.IsFacing(Player) && R.IsReady() && Config.Item("cooldown").GetValue<bool>()) //is facing just so you wont cancel valor if you are trying to run away :S
                 {
                     R.Cast();
                 }
