@@ -123,6 +123,7 @@ namespace Quinn
                     E.CastOnUnit(vTarget, true);
                     if (Player.Distance(vTarget) <= 200)
                     {
+                        Q.Cast();
                         R.Cast(true);
                     }
 
