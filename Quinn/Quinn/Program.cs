@@ -45,7 +45,6 @@ namespace Quinn
             Config.SubMenu("Combo").AddItem(new MenuItem("UseQ", "Use Q?").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseE", "Use E?").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseR", "Use R?").SetValue(true));
-            Config.SubMenu("Combo").AddItem(new MenuItem("WaitH", "Dont E if target has Harrier").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseER", "Use ER valor mode (burst)").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("Double", "Double Harrier").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("cooldown", "if skills on cooldown return to human?").SetValue(true));
